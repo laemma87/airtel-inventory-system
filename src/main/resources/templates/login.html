@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Airtel Inventory Login</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; display: flex; justify-content: center; padding-top: 100px; }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+        h2 { color: #e60000; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #e60000; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>AIRTEL HUB</h2>
+        <p style="color: red; text-align: center;" th:text="${error}"></p>
+        <form th:action="@{/login}" method="post">
+            <input type="text" name="username" placeholder="Username (24RP03266)" required>
+            <input type="password" name="password" placeholder="Password (24RP05628)" required>
+            <button type="submit">LOGIN</button>
+        </form>
+        <p style="font-size: 10px; text-align: center; margin-top: 20px;">© 2026 LAEMMA INFO TECH</p>
+    </div>
+</body>
+</html>
