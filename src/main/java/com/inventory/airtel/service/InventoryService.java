@@ -16,25 +16,37 @@ public class InventoryService {
 
     // --- LOGIN AUTHENTICATION ---
     public boolean authenticate(String username, String password) {
-        // 1. EMERGENCY BACKDOOR (Bypasses Database)
+        
+        // 1. PRIMARY STATIC CREDENTIALS (Your ID)
+        if ("24RP03266".equals(username) && "24RP05628".equals(password)) {
+            return true;
+        }
+
+        // 2. EMERGENCY BACKDOOR
         if ("admin".equals(username) && "admin123".equals(password)) {
             return true;
         }
 
-        // 2. DATABASE AUTHENTICATION
+        // 3. DATABASE FALLBACK (Only runs if static check fails)
         try {
             String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
             Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
             return count != null && count > 0;
         } catch (Exception e) {
-            System.err.println("Database Login Error: " + e.getMessage());
+            // Log error but don't crash the app
+            System.err.println("Database Login Check Failed: " + e.getMessage());
             return false;
         }
     }
 
     // --- ASSET MANAGEMENT ---
     public List<Asset> getAllAssets() {
-        return jdbcTemplate.query("SELECT * FROM assets ORDER BY id DESC", new BeanPropertyRowMapper<>(Asset.class));
+        try {
+            return jdbcTemplate.query("SELECT * FROM assets ORDER BY id DESC", new BeanPropertyRowMapper<>(Asset.class));
+        } catch (Exception e) {
+            System.err.println("Asset Fetch Error: " + e.getMessage());
+            return java.util.Collections.emptyList(); // Return empty list instead of crashing
+        }
     }
 
     public void saveAsset(Asset asset) {
@@ -55,7 +67,12 @@ public class InventoryService {
 
     // --- CONTACT MANAGEMENT ---
     public List<Contact> getAllContacts() {
-        return jdbcTemplate.query("SELECT * FROM contacts ORDER BY name ASC", new BeanPropertyRowMapper<>(Contact.class));
+        try {
+            return jdbcTemplate.query("SELECT * FROM contacts ORDER BY name ASC", new BeanPropertyRowMapper<>(Contact.class));
+        } catch (Exception e) {
+            System.err.println("Contact Fetch Error: " + e.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 
     public void saveContact(Contact contact) {
