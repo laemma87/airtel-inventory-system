@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 
-@Component
+// @Component <-- COMMENTED OUT to prevent Railway deployment crashes
 public class ContactForm extends JFrame {
 
     @Autowired private InventoryService inventoryService;
@@ -22,7 +22,6 @@ public class ContactForm extends JFrame {
     private JButton btnSave = new JButton("Register Employee");
 
     public void prepareForUpdate(Contact contact) {
-        
         init(); 
         this.currentContactId = contact.getId();
         txtEmpId.setText(contact.getEmployeeId());
@@ -36,7 +35,6 @@ public class ContactForm extends JFrame {
     }
 
     public void init() {
-        
         if (currentContactId == null) {
             clearFields();
             btnSave.setText("Register Employee");
@@ -49,7 +47,6 @@ public class ContactForm extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        
         JPanel pnlHeader = new JPanel();
         pnlHeader.setBackground(new Color(230, 0, 0));
         JLabel lblHeader = new JLabel("STAFF MANAGEMENT");
@@ -57,7 +54,6 @@ public class ContactForm extends JFrame {
         lblHeader.setFont(new Font("Arial", Font.BOLD, 14));
         pnlHeader.add(lblHeader);
 
-        
         JPanel pnlForm = new JPanel(new GridLayout(5, 2, 10, 15));
         pnlForm.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -69,14 +65,12 @@ public class ContactForm extends JFrame {
         btnSave.setForeground(Color.WHITE);
         pnlForm.add(new JLabel("")); pnlForm.add(btnSave);
 
-        
         getContentPane().removeAll();
         add(pnlHeader, BorderLayout.NORTH);
         add(pnlForm, BorderLayout.CENTER);
         revalidate();
         repaint();
 
-        
         for(var al : btnSave.getActionListeners()) btnSave.removeActionListener(al);
         
         btnSave.addActionListener(e -> {
@@ -96,7 +90,7 @@ public class ContactForm extends JFrame {
                 currentContactId = null; 
             }
 
-            mainFrame.refreshData();
+            if (mainFrame != null) mainFrame.refreshData();
             this.dispose();
         });
     }

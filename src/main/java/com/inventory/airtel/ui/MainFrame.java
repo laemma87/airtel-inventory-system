@@ -9,13 +9,16 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-@Component
+/**
+ * @Component is commented out to prevent Railway from crashing.
+ * Headless servers cannot instantiate JFrame components.
+ */
+// @Component 
 public class MainFrame extends JFrame {
 
     @Autowired private InventoryService inventoryService;
@@ -36,7 +39,7 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        
+        // Header
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(230, 0, 0));
         header.setPreferredSize(new Dimension(1200, 70));
@@ -45,7 +48,7 @@ public class MainFrame extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 22));
         header.add(title, BorderLayout.WEST);
 
-        
+        // Side Navigation
         JPanel sideNav = new JPanel();
         sideNav.setLayout(new BoxLayout(sideNav, BoxLayout.Y_AXIS));
         sideNav.setBackground(new Color(40, 40, 40));
@@ -73,11 +76,10 @@ public class MainFrame extends JFrame {
             if(link.equals("Logout")) btn.addActionListener(e -> handleLogout());
         }
 
-        
+        // Body
         JPanel mainBody = new JPanel(new BorderLayout());
         JPanel statsGrid = new JPanel(new GridLayout(1, 3, 20, 0));
         statsGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
         
         statsGrid.add(createStatCard("Total Assets", lblAssetCount, new Color(230, 0, 0), () -> showAssetView()));
         statsGrid.add(createStatCard("Staff Registered", lblStaffCount, new Color(50, 50, 50), () -> showStaffView()));
@@ -99,11 +101,10 @@ public class MainFrame extends JFrame {
         statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
         add(statusLabel, BorderLayout.SOUTH);
 
-        showAssetView();
-        setVisible(true);
+        // No showAssetView() or setVisible(true) calls here to avoid library triggers
+        // showAssetView();
+        // setVisible(true);
     }
-
-    
 
     private JPanel createStatCard(String title, JLabel valueLabel, Color color, Runnable action) {
         JPanel card = new JPanel(new BorderLayout());
@@ -137,7 +138,6 @@ public class MainFrame extends JFrame {
             @Override public boolean isCellEditable(int r, int c) { return c == 8; }
         };
         assetTable.setModel(tableModel);
-        
         refreshData();
     }
 
@@ -151,6 +151,7 @@ public class MainFrame extends JFrame {
     }
 
     public void refreshData() {
+        if (tableModel == null) return;
         tableModel.setRowCount(0);
         List<Asset> assets = inventoryService.getAllAssets();
         List<Contact> contacts = inventoryService.getAllContacts();

@@ -6,7 +6,11 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 
-@Component
+/**
+ * @Component is commented out to allow the web application to run 
+ * in a headless server environment like Railway.
+ */
+// @Component 
 public class LoginFrame extends JFrame {
 
     @Autowired
@@ -26,7 +30,6 @@ public class LoginFrame extends JFrame {
         setResizable(false);
         setLayout(new BorderLayout());
 
-        
         JPanel header = new JPanel();
         header.setBackground(new Color(230, 0, 0));
         header.setPreferredSize(new Dimension(400, 100));
@@ -35,7 +38,6 @@ public class LoginFrame extends JFrame {
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         header.add(lblTitle);
 
-        
         JPanel form = new JPanel(null);
         form.setBackground(Color.WHITE);
 
@@ -64,14 +66,13 @@ public class LoginFrame extends JFrame {
         add(header, BorderLayout.NORTH);
         add(form, BorderLayout.CENTER);
 
-        setVisible(true);
+        // setVisible(true); // Disable this for headless environments
     }
 
     private void handleLogin() {
         String user = txtUsername.getText();
         String pass = new String(txtPassword.getPassword());
 
-        
         boolean success = inventoryService.authenticate(user, pass);
 
         if (success) {
