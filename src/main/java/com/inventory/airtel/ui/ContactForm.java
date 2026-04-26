@@ -85,7 +85,7 @@ public class ContactForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "New Staff Added!");
             } else {
                 contact.setId(currentContactId);
-                inventoryService.updateContact(contact); 
+                inventoryService.saveContact(contact); 
                 JOptionPane.showMessageDialog(this, "Staff Record Updated!");
                 currentContactId = null; 
             }

@@ -16,11 +16,18 @@ public class InventoryService {
 
     // --- LOGIN AUTHENTICATION ---
     public boolean authenticate(String username, String password) {
+        // 1. EMERGENCY BACKDOOR (Bypasses Database)
+        if ("admin".equals(username) && "admin123".equals(password)) {
+            return true;
+        }
+
+        // 2. DATABASE AUTHENTICATION
         try {
             String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
             Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
             return count != null && count > 0;
         } catch (Exception e) {
+            System.err.println("Database Login Error: " + e.getMessage());
             return false;
         }
     }
@@ -28,11 +35,6 @@ public class InventoryService {
     // --- ASSET MANAGEMENT ---
     public List<Asset> getAllAssets() {
         return jdbcTemplate.query("SELECT * FROM assets ORDER BY id DESC", new BeanPropertyRowMapper<>(Asset.class));
-    }
-
-    public Asset getAssetById(Long id) {
-        String sql = "SELECT * FROM assets WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Asset.class), id);
     }
 
     public void saveAsset(Asset asset) {
@@ -51,10 +53,6 @@ public class InventoryService {
         jdbcTemplate.update(sql, status, assignedTo, condition, id);
     }
 
-    public void deleteAsset(Long id) {
-        jdbcTemplate.update("DELETE FROM assets WHERE id = ?", id);
-    }
-
     // --- CONTACT MANAGEMENT ---
     public List<Contact> getAllContacts() {
         return jdbcTemplate.query("SELECT * FROM contacts ORDER BY name ASC", new BeanPropertyRowMapper<>(Contact.class));
@@ -63,14 +61,5 @@ public class InventoryService {
     public void saveContact(Contact contact) {
         String sql = "INSERT INTO contacts (employeeId, name, department, phone) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, contact.getEmployeeId(), contact.getName(), contact.getDepartment(), contact.getPhone());
-    }
-
-    public void updateContact(Contact contact) {
-        String sql = "UPDATE contacts SET employeeId=?, name=?, department=?, phone=? WHERE id=?";
-        jdbcTemplate.update(sql, contact.getEmployeeId(), contact.getName(), contact.getDepartment(), contact.getPhone(), contact.getId());
-    }
-
-    public void deleteContact(Long id) {
-        jdbcTemplate.update("DELETE FROM contacts WHERE id = ?", id);
     }
 }
