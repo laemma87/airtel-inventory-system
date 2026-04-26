@@ -23,7 +23,14 @@ public class AssetController {
 
     @PostMapping("/assets/save")
     public String saveAsset(@ModelAttribute Asset asset) {
-        inventoryService.saveAsset(asset);
+        // We take the logic from the Swing file and put it here
+        if (asset.getId() == null) {
+            asset.setStatus("In Store");
+            asset.setAssignedTo("Unassigned");
+            inventoryService.saveAsset(asset);
+        } else {
+            inventoryService.updateAssetDetails(asset);
+        }
         return "redirect:/dashboard";
     }
 }

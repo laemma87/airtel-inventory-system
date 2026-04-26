@@ -2,11 +2,13 @@ package com.inventory.airtel.service;
 
 import com.inventory.airtel.model.Asset;
 import com.inventory.airtel.model.Contact;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 public class InventoryService {
@@ -16,7 +18,6 @@ public class InventoryService {
 
     // --- LOGIN AUTHENTICATION ---
     public boolean authenticate(String username, String password) {
-        
         // 1. PRIMARY STATIC CREDENTIALS (Your ID)
         if ("24RP03266".equals(username) && "24RP05628".equals(password)) {
             return true;
@@ -27,13 +28,12 @@ public class InventoryService {
             return true;
         }
 
-        // 3. DATABASE FALLBACK (Only runs if static check fails)
+        // 3. DATABASE FALLBACK
         try {
             String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
             Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
             return count != null && count > 0;
         } catch (Exception e) {
-            // Log error but don't crash the app
             System.err.println("Database Login Check Failed: " + e.getMessage());
             return false;
         }
@@ -45,7 +45,17 @@ public class InventoryService {
             return jdbcTemplate.query("SELECT * FROM assets ORDER BY id DESC", new BeanPropertyRowMapper<>(Asset.class));
         } catch (Exception e) {
             System.err.println("Asset Fetch Error: " + e.getMessage());
-            return java.util.Collections.emptyList(); // Return empty list instead of crashing
+            return Collections.emptyList();
+        }
+    }
+
+    // NEW: Needed for the Web "Issue/Return" logic
+    public Asset getAssetById(Long id) {
+        try {
+            String sql = "SELECT * FROM assets WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Asset.class), id);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -71,7 +81,7 @@ public class InventoryService {
             return jdbcTemplate.query("SELECT * FROM contacts ORDER BY name ASC", new BeanPropertyRowMapper<>(Contact.class));
         } catch (Exception e) {
             System.err.println("Contact Fetch Error: " + e.getMessage());
-            return java.util.Collections.emptyList();
+            return Collections.emptyList();
         }
     }
 
