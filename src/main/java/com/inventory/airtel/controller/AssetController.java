@@ -23,14 +23,25 @@ public class AssetController {
 
     @PostMapping("/assets/save")
     public String saveAsset(@ModelAttribute Asset asset) {
-        // We take the logic from the Swing file and put it here
-        if (asset.getId() == null) {
-            asset.setStatus("In Store");
-            asset.setAssignedTo("Unassigned");
-            inventoryService.saveAsset(asset);
-        } else {
-            inventoryService.updateAssetDetails(asset);
+        try {
+            // FIX: Check for BOTH null and 0 to ensure it triggers an INSERT
+            if (asset.getId() == null || asset.getId() == 0) {
+                // Set defaults for new assets
+                asset.setStatus("In Store");
+                asset.setAssignedTo("Unassigned");
+                inventoryService.saveAsset(asset);
+                System.out.println("Successfully INSERTED new asset: " + asset.getTagId());
+            } else {
+                inventoryService.updateAssetDetails(asset);
+                System.out.println("Successfully UPDATED asset ID: " + asset.getId());
+            }
+            return "redirect:/dashboard";
+            
+        } catch (Exception e) {
+            // This will print the EXACT database error in your Railway "Deploy Logs"
+            System.err.println("CRITICAL ERROR DURING SAVE: " + e.getMessage());
+            e.printStackTrace(); 
+            return "redirect:/assets/new?error";
         }
-        return "redirect:/dashboard";
     }
 }
